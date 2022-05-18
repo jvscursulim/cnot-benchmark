@@ -2,13 +2,11 @@ import sys
 
 sys.path.append("../")
 
-import pandas as pd
-
 from cnot import standard_cnot
 from qiskit import Aer, execute
-from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
+from qiskit.circuit import QuantumCircuit, QuantumRegister
 from qiskit.providers.aer import AerSimulator
-from qiskit.providers.aer.noise import depolarizing_error, pauli_error
+from qiskit.providers.aer.noise import NoiseModel
 from qiskit.quantum_info import average_gate_fidelity, Kraus, process_fidelity
 
 from typing import Optional
@@ -17,6 +15,7 @@ QASM_SIM = Aer.get_backend('qasm_simulator')
 UNITARY_SIM = Aer.get_backend('unitary_simulator')
 AER_SIM = AerSimulator(zero_threshold = 1e-5)
 STANDARD_CNOT_UNITARY = execute(experiments = standard_cnot(), backend = UNITARY_SIM).result().get_unitary()
+
 
 def avg_gate_infidelity_experiment(circuit: QuantumCircuit) -> float:
     """Calculates the average gate infidelity between the quantum circuit
@@ -41,9 +40,84 @@ def avg_gate_infidelity_experiment(circuit: QuantumCircuit) -> float:
     else:
         
         raise TypeError("The input is not a QuantumCircuit!")
+
     
-def counts_experiment(circuit: QuantumCircuit, shots: int) -> dict:
-    pass
+def counts_experiment(circuit: QuantumCircuit, shots: int, noise_model: NoiseModel = None) -> dict:
+    """Executes a sampling experiment.
+
+    Args:
+        circuit (QuantumCircuit): A quantum circuit.
+        shots (int): The number of shots of the experiment.
+        noise_model (NoiseModel, optional): The noise model of the simulation. Defaults to None.
+
+    Returns:
+        dict: The dictionary of counts.
+    """
+    if isinstance(circuit, QuantumCircuit) and isinstance(shots, int) and (isinstance(noise_model, NoiseModel) or noise_model is None):
+        
+        counts = execute(experiments = circuit, backend = AER_SIM, shots = shots, noise_model = noise_model).result().get_counts()
+        return counts
+        
+    else:
+        
+        raise TypeError("The inputs are not a QuantumCircuit, an int, and a NoiseModel.")
+
+
+def cnot_truth_table_experiment(circuit: QuantumCircuit) -> dict:
+    """Tests if a given circuit represents a CNOT gate.
+
+    Args:
+        circuit (QuantumCircuit): A circuit of a candidate a CNOT gate.
+
+    Raises:
+        TypeError: If the input is not a QuantumCircuit.
+
+    Returns:
+        dict: A dictionary with the results of the experiment.
+    """
+    if isinstance(circuit, QuantumCircuit):
+        
+        inputs = ['00', '01', '10', '11']
+        experiments_results_dict = {}
+        
+        for input in inputs:
+            
+            if input == '00':
+                
+                counts = counts_experiment(circuit = circuit, shots = 1)
+                result = '00' in counts.keys()
+                experiments_results_dict[input+" -> 00"] = result
+            elif input == '01':
+                
+                qc = QuantumCircuit(2,2)
+                qc.x(qubit = 0)
+                qc = qc.compose(circuit)
+                counts = counts_experiment(circuit = qc, shots = 1)
+                result = '11' in counts.keys()
+                experiments_results_dict[input+" -> 11"] = result
+            elif input == '10':
+                
+                qc = QuantumCircuit(2,2)
+                qc.x(qubit = 1)
+                qc = qc.compose(circuit)
+                counts = counts_experiment(circuit = qc, shots = 1)
+                result = '10' in counts.keys()
+                experiments_results_dict[input+" -> 10"] = result
+            else:
+                
+                qc = QuantumCircuit(2,2)
+                qc.x(qubit = [0,1])
+                qc = qc.compose(circuit)
+                counts = counts_experiment(circuit = qc, shots = 1)
+                result = '01' in counts.keys()
+                experiments_results_dict[input+" -> 01"] = result
+                
+        return experiments_results_dict      
+                
+    else:
+        
+        raise TypeError("The input is not a QuantumCircuit!")
+
     
 def process_infidelity_experiment(circuit: QuantumCircuit) -> float:
     """Calculates the process infidelity between the input quantum circuit and
@@ -67,6 +141,7 @@ def process_infidelity_experiment(circuit: QuantumCircuit) -> float:
     else:
         
         raise TypeError("The input is not a QuantumCircuit!")
+
     
 def process_result(code_qubits_register: QuantumRegister, logical_bit: str, counts: dict, num_shots: int, has_ancilla: Optional[bool] = False) -> tuple:
     """Processes an experiment result.
@@ -113,40 +188,4 @@ def process_result(code_qubits_register: QuantumRegister, logical_bit: str, coun
             raise ValueError("Wrong value of logical! The logical argument must be equal to '0' or '1'.")
     else:
         
-        raise TypeError("Invalids arguments! This function only accepts QuantumRegister, QuantumCircuit, str, dict, int and bool types.")
-
-# def test():
-    
-#     columns = ["Error probability", "00 Counts", "01 Counts", "10 Counts", "11 Counts", "p_00", "p_not_00", "Process infidelity", "Average gate infidelity"]
-#     data = []
-    
-#     for key, value in experiments_counts_dict.items():
-        
-#         if '00' in value.keys():
-            
-#             counts_00 = value['00']
-#         else:
-            
-#             counts_00 = 0
-#         if '01' in value.keys():
-            
-#             counts_01 = value['01']
-#         else:
-            
-#             counts_01 = 0
-#         if '10' in value.keys():
-            
-#             counts_10 = value['10']
-#         else:
-            
-#             counts_10 = 0
-#         if '11' in value.keys():
-            
-#             counts_11 = value['11']
-#         else:
-            
-#             counts_11 = 0
-            
-#         data.append([float(key), counts_00, counts_01, counts_10, counts_11, experiments_])
-        
-#     data_pd = pd.DataFrame(data = data, columns = columns)
+        raise TypeError("Invalids arguments! This function only accepts QuantumRegister, QuantumCircuit, str, dict, int and bool types.") 
