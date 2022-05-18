@@ -8,11 +8,12 @@ def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, p
 
     Args:
         measurements (bool, optional): Put measurements gates in the circuit. Defaults to False.
-        noisy (QuantumError, optional): . Defaults to None.
-        params (List[float], optional): . Defaults to None.
+        noisy (QuantumError, optional): A noisy that will added to the circuit. Defaults to None.
+        params (List[float], optional): A list of coherent errors that will added to the circuit. Defaults to None.
 
     Raises:
         TypeError: If measurements is not a bool.
+        TypeError: If noisy is not a QuantumError.
         TypeError: If noisy is not a QuantumError.
 
     Returns:
@@ -92,10 +93,11 @@ def hadamard_cz_cnot(measurements: bool = False, noisy: QuantumError = None) -> 
 
     Args:
         measurements (bool, optional): Put measurements gates in the circuit. Defaults to False.
-        noisy (QuantumError, optional): . Defaults to None.
+        noisy (QuantumError, optional): A noisy that will added to the circuit. Defaults to None.
 
     Raises:
         TypeError: If measurements is not a bool.
+        TypeError: If noisy is not a QuantumError.
         TypeError: If noisy is not a QuantumError.
 
     Returns:
@@ -158,11 +160,12 @@ def molmer_sorensen_cnot(measurements: bool = False, noisy: QuantumError = None,
 
     Args:
         measurements (bool, optional): Put measurements gates in the circuit. Defaults to False.
-        noisy (QuantumError, optional): . Defaults to None.
-        params (List[float], optional): . Defaults to None.
+        noisy (QuantumError, optional): A noisy that will added to the circuit. Defaults to None.
+        params (List[float], optional): A list of coherent errors that will added to the circuit. Defaults to None.
 
     Raises:
         TypeError: If measurements is not a bool.
+        TypeError: If noisy is not a QuantumError.
         TypeError: If noisy is not a QuantumError.
 
     Returns:
@@ -260,6 +263,7 @@ def standard_cnot(measurements: bool = False, noisy: QuantumError = None) -> Qua
     Raises:
         TypeError: If measurements is not a bool.
         TypeError: If noisy is not a QuantumError.
+        TypeError: If noisy is not a QuantumError.
 
     Returns:
         QuantumCircuit: The circuit that represents a CNOT gate.
@@ -305,18 +309,19 @@ def standard_cnot(measurements: bool = False, noisy: QuantumError = None) -> Qua
             return qc
     else:
         
-        raise TypeError("The input is not as a bool!")
+        raise TypeError("The input is not a bool!")
     
 def sqrt_swap_cnot(measurements: bool = False, noisy: QuantumError = None, params: List[float] = None) -> QuantumCircuit:
     """Creates a CNOT gate using the square root of the SWAP gate, RY, Z and RZ.
 
     Args:
         measurements (bool, optional): Put measurements gates in the circuit. Defaults to False.
-        noisy (QuantumError, optional): . Defaults to None.
-        params (List[float], optional): . Defaults to None.
+        noisy (QuantumError, optional): A noisy that will added to the circuit. Defaults to None.
+        params (List[float], optional): A list of coherent errors that will added to the circuit. Defaults to None.
 
     Raises:
         TypeError: If measurements is not a bool.
+        TypeError: If noisy is not a QuantumError.
         TypeError: If noisy is not a QuantumError.
 
     Returns:
@@ -376,7 +381,7 @@ def sqrt_swap_cnot(measurements: bool = False, noisy: QuantumError = None, param
             return qc
         else:
             
-            qc = QuantumCircuit(2,2)
+            qc = QuantumCircuit(2)
             if noisy is None:
                 
                 if params is None:
@@ -424,4 +429,91 @@ def sqrt_swap_cnot(measurements: bool = False, noisy: QuantumError = None, param
             return qc
     else:
         
-        raise TypeError("The input is not as a bool!")
+        raise TypeError("The input is not a bool!")
+
+    
+def sqrt_xx_cnot(measurements: bool = False, noisy: QuantumError = None) -> QuantumCircuit:
+    """Creates the circuit of square root of XX CNOT gate.
+
+    Args:
+        measurements (bool, optional): Put measurements gates in the circuit. Defaults to False.
+        noisy (QuantumError, optional): A noisy that will added to the circuit. Defaults to None.
+
+    Raises:
+        TypeError: If measurements if not a bool.
+        TypeError: If noisy is not a QuantumError. 
+        TypeError: If noisy is not a QuantumError.
+
+    Returns:
+        QuantumCircuit: The circuit that represents a CNOT.
+    """
+    if isinstance(measurements, bool):
+        
+        identity_4_by_4 = np.eye(N=4)
+        sigma_x = np.array([[0,1],[1,0]])
+        sigma_xx = np.kron(sigma_x, sigma_x)
+        sqrt_sigma_xx = ((1+1j)/np.sqrt(2))*((1/np.sqrt(2))*identity_4_by_4 + -1j*(1/np.sqrt(2))*sigma_xx)
+        if measurements:
+            
+            qc = QuantumCircuit(2,2)
+            if noisy is None:
+                
+                qc.x(qubit = 0)
+                qc.h(qubit = 0)
+                qc.unitary(sqrt_sigma_xx, qubits = [0,1])
+                qc.h(qubit = 0)
+                qc.sx(qubit = 1)
+                qc.s(qubit = 0)
+                qc.x(qubit = 0)
+            else:
+                
+                if isinstance(noisy, QuantumError):
+                    
+                    qc.append(noisy, qargs = [0,1])
+                    qc.x(qubit = 0)
+                    qc.h(qubit = 0)
+                    qc.unitary(sqrt_sigma_xx, qubits = [0,1])
+                    qc.h(qubit = 0)
+                    qc.sx(qubit = 1)
+                    qc.s(qubit = 0)
+                    qc.x(qubit = 0)
+                    qc.append(noisy, qargs = [0,1])
+                else:
+                    
+                    raise TypeError("The input is not a QuantumError!")
+            
+            qc.measure(qubit = [0,1], cbit = [0,1])
+            return qc
+        else:
+            
+            qc = QuantumCircuit(2)
+            if noisy is None:
+                
+                qc.x(qubit = 0)
+                qc.h(qubit = 0)
+                qc.unitary(sqrt_sigma_xx, qubits = [0,1])
+                qc.h(qubit = 0)
+                qc.sx(qubit = 1)
+                qc.s(qubit = 0)
+                qc.x(qubit = 0)
+            else:
+                
+                if isinstance(noisy, QuantumError):
+                    
+                    qc.append(noisy, qargs = [0,1])
+                    qc.x(qubit = 0)
+                    qc.h(qubit = 0)
+                    qc.unitary(sqrt_sigma_xx, qubits = [0,1])
+                    qc.h(qubit = 0)
+                    qc.sx(qubit = 1)
+                    qc.s(qubit = 0)
+                    qc.x(qubit = 0)
+                    qc.append(noisy, qargs = [0,1])
+                else:
+                    
+                    raise TypeError("The input is not a QuantumError!")
+            
+            return qc
+    else:
+        
+        raise TypeError("The input is not a bool!")

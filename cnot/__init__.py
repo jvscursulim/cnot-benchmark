@@ -1,1 +1,1 @@
-from .cnot import controlled_rx_cnot, hadamard_cz_cnot, floating_gate_cnot, molmer_sorensen_cnot, standard_cnot, sqrt_swap_cnot
+from .cnot import controlled_rx_cnot, hadamard_cz_cnot, floating_gate_cnot, molmer_sorensen_cnot, standard_cnot, sqrt_swap_cnot, sqrt_xx_cnot
