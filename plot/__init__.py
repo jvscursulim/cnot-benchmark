@@ -1,1 +1,1 @@
-from .plot import plot_infidelity_experiments_results
+from .plot import plot_infidelity_experiments_results, plot_code_experiments_results
