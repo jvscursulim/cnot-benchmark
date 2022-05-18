@@ -169,7 +169,7 @@ def process_result(code_qubits_register: QuantumRegister, logical_bit: str, coun
                 
                 if has_ancilla:
                     
-                    if keys.split(" ")[code_qubits_register.size] == logical_bit*code_qubits_register.size:
+                    if keys.split(" ")[-1] == logical_bit*code_qubits_register.size:
                         
                         count_sucess += value
                 else:
