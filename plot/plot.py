@@ -1,4 +1,3 @@
-from turtle import color
 import matplotlib.pyplot as plt
 import numpy as np
 from pandas import DataFrame
