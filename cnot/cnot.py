@@ -47,7 +47,7 @@ def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, p
                         qc.crx(theta = params[0], control_qubit = 0, target_qubit = 1)
                         
                     qc.append(noisy, qargs = [0,1])
-                    qc.measure(qubit = [0,1], bits = [0,1])
+                    qc.measure(qubit = [0,1], cbit = [0,1])
                 else:
                     
                     raise TypeError("The input is not a QuantumError!")
