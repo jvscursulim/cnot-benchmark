@@ -1,1 +1,1 @@
-from .experiments import counts_experiment, process_result, process_infidelity_experiment, avg_gate_infidelity_experiment
+from .experiments import counts_experiment, process_result, process_infidelity_experiment, avg_gate_infidelity_experiment, cnot_truth_table_experiment
