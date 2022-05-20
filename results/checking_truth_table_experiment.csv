@@ -1,0 +1,7 @@
+,type,00 -> 00,01 -> 11,10 -> 10,11 -> 01
+0,standard,True,True,True,True
+1,hadamard_cz,True,True,True,True
+2,sqrt_xx,True,True,True,True
+3,controlled_rx,True,True,True,True
+4,molmer_sorensen,True,True,True,True
+5,sqrt_swap,True,True,True,True
