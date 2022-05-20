@@ -43,7 +43,6 @@ def plot_infidelity_experiments_results(data: DataFrame, save_fig: bool = False,
                 else:
                     
                     raise TypeError("The input is not a str!")
-        plt.show()
     else:
         
         raise TypeError("The input is not a DataFrame!")
@@ -90,7 +89,6 @@ def plot_code_experiments_results(data1: DataFrame, data2: DataFrame, save_fig: 
                 else:
                     
                     raise TypeError("The input is not a str!")
-        plt.show()
         
     else:
         
