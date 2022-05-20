@@ -1,3 +1,5 @@
+import numpy as np
+
 from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 
 def create_3_repetition_code_circuit(env_param: float, qubit_error_target: int = 1, noisy_cnot: QuantumCircuit = None) -> QuantumCircuit:
@@ -120,8 +122,19 @@ def create_shor_code_circuit(env_param: float, qubit_error_target: int = 1, nois
        
    qc.barrier()
    
-   qc.cx(control_qubit = env_qubit, target_qubit = qubit_error_target)
+   rng_number = np.random.randint(0,3)
    
+   if rng_number == 0:
+       
+        qc.cx(control_qubit = env_qubit, target_qubit = qubit_error_target)
+   elif rng_number == 1:
+       
+       qc.cz(control_qubit = env_qubit, target_qubit = qubit_error_target)
+   else:
+       
+       qc.cx(control_qubit = env_qubit, target_qubit = qubit_error_target)
+       qc.cz(control_qubit = env_qubit, target_qubit = qubit_error_target)
+       
    qc.barrier()
    
    if noisy_cnot is None:
