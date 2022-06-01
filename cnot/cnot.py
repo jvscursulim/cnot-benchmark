@@ -1,6 +1,7 @@
 import numpy as np
 from qiskit.circuit import QuantumCircuit
 from qiskit.providers.aer.noise import QuantumError
+from qiskit.opflow import I, X, Y, Z
 from typing import List
 
 def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, params: List[float] = None) -> QuantumCircuit:
@@ -89,8 +90,124 @@ def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, p
         
         raise TypeError("The input is not a bool!")
     
-def floating_gate_cnot(measurements: bool = False) -> QuantumCircuit:
-    pass
+def floating_gate_cnot(model_constants: dict = {"J_12": 0.2, "Gamma_x": 0.1, "E_z": 2.0}, measurements: bool = False, noisy: QuantumError = None) -> QuantumCircuit:
+    """_summary_
+
+    Args:
+        model_constants (_type_, optional): _description_. Defaults to {"J_12": 0.2, "Gamma_x": 0.1, "E_z": 2.0}.
+        measurements (bool, optional): _description_. Defaults to False.
+        noisy (QuantumError, optional): _description_. Defaults to None.
+
+    Raises:
+        TypeError: _description_
+        TypeError: _description_
+        TypeError: _description_
+        TypeError: _description_
+
+    Returns:
+        QuantumCircuit: _description_
+    """
+    if isinstance(model_constants, dict):
+        
+        if isinstance(measurements, bool):
+            
+            hamiltonian = ((model_constants["J_12"]/2)*(abs(model_constants["Gamma_x"]**2))*X ^ X) + ((model_constants["J_12"]/2)*(abs(model_constants["Gamma_x"]**2))*Y ^ Y) + (model_constants["E_z"]*Z ^ I) + (model_constants["E_z"]*I ^ Z)
+            t = np.pi/(4*model_constants["J_12"]*(abs(model_constants["Gamma_x"]**2)))
+            
+            if measurements:
+                
+                qc = QuantumCircuit(2,2)
+                if noisy is None:
+                    
+                    qc.x(qubit = 0)
+                    qc.h(qubit = 0)
+                    for _ in range(2):
+                        
+                        qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                        qc.x(qubit = [0,1])
+                        qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                        qc.x(qubit = 0)
+                    
+                    qc.h(qubit = 0)
+                    qc.sx(qubit = 1)
+                    qc.s(qubit = 0)
+                    qc.x(qubit = 0)
+                    qc.z(qubit = 0)
+                else:
+                    
+                    if isinstance(noisy, QuantumError):
+                        
+                        qc.append(noisy, qargs = [0,1])
+                        qc.x(qubit = 0)
+                        qc.h(qubit = 0)
+                        for _ in range(2):
+                        
+                            qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                            qc.x(qubit = [0,1])
+                            qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                            qc.x(qubit = 0)
+                    
+                        qc.h(qubit = 0)
+                        qc.sx(qubit = 1)
+                        qc.s(qubit = 0)
+                        qc.x(qubit = 0)
+                        qc.z(qubit = 0)
+                        qc.append(noisy, qargs = [0,1])
+                    else:
+                        
+                        raise TypeError("noisy must be a QuantumError!")
+                qc.measure(qubit = [0,1], cbit = [0,1])
+                
+                return qc
+            else:
+                
+                qc = QuantumCircuit(2,2)
+                if noisy is None:
+                    
+                    qc.x(qubit = 0)
+                    qc.h(qubit = 0)
+                    for _ in range(2):
+                        
+                        qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                        qc.x(qubit = [0,1])
+                        qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                        qc.x(qubit = 0)
+                    
+                    qc.h(qubit = 0)
+                    qc.sx(qubit = 1)
+                    qc.s(qubit = 0)
+                    qc.x(qubit = 0)
+                    qc.z(qubit = 0)
+                else:
+                    
+                    if isinstance(noisy, QuantumError):
+                        
+                        qc.append(noisy, qargs = [0,1])
+                        qc.x(qubit = 0)
+                        qc.h(qubit = 0)
+                        for _ in range(2):
+                        
+                            qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                            qc.x(qubit = [0,1])
+                            qc.hamiltonian(operator = hamiltonian, time = t/2, qubits = [0,1])
+                            qc.x(qubit = 0)
+                    
+                        qc.h(qubit = 0)
+                        qc.sx(qubit = 1)
+                        qc.s(qubit = 0)
+                        qc.x(qubit = 0)
+                        qc.z(qubit = 0)
+                        qc.append(noisy, qargs = [0,1])
+                    else:
+                        
+                        raise TypeError("noisy must be a QuantumError!")
+                return qc
+        else:
+            
+            raise TypeError("measurements must be a bool!")
+    else:
+        
+        raise TypeError("model_constants must be a dictionary!")
     
 def hadamard_cz_cnot(measurements: bool = False, noisy: QuantumError = None) -> QuantumCircuit:
     """Creates a CNOT gate using hadamard and CZ gates.
