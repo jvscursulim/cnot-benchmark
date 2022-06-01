@@ -2,6 +2,7 @@
 0,standard,True,True,True,True
 1,hadamard_cz,True,True,True,True
 2,sqrt_xx,True,True,True,True
-3,controlled_rx,True,True,True,True
-4,molmer_sorensen,True,True,True,True
-5,sqrt_swap,True,True,True,True
+3,floating_gate,True,True,True,True
+4,controlled_rx,True,True,True,True
+5,molmer_sorensen,True,True,True,True
+6,sqrt_swap,True,True,True,True
