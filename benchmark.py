@@ -5,14 +5,14 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-from cnot import controlled_rx_cnot, hadamard_cz_cnot, molmer_sorensen_cnot, standard_cnot, sqrt_xx_cnot, sqrt_swap_cnot
+from cnot import controlled_rx_cnot, floating_gate_cnot, hadamard_cz_cnot, molmer_sorensen_cnot, standard_cnot, sqrt_xx_cnot, sqrt_swap_cnot
 from experiments import counts_experiment, process_result, process_infidelity_experiment, avg_gate_infidelity_experiment, cnot_truth_table_experiment
 from qiskit.providers.aer.noise import depolarizing_error, pauli_error
 from plot import plot_experiments_results
 from qec import create_3_repetition_code_circuit
 
 date_and_time = str(dt.datetime.now()).replace(":","-").split(".")[0].replace(" ", "_")
-cnots_list = ["standard", "hadamard_cz", "sqrt_xx", "controlled_rx", "molmer_sorensen", "sqrt_swap"]
+cnots_list = ["standard", "hadamard_cz", "sqrt_xx", "floating_gate", "controlled_rx", "molmer_sorensen", "sqrt_swap"]
 
 columns_truth_table_experiment = ["type", "00 -> 00", "01 -> 11", "10 -> 10", "11 -> 01"]
 data_truth_table_experiment = []
@@ -36,6 +36,12 @@ for cnot in cnots_list:
     elif cnot == "sqrt_xx":
         
         circuit = sqrt_xx_cnot(measurements = True)
+        result = cnot_truth_table_experiment(circuit = circuit)
+        aux_list2 = [value for _, value in result.items()]
+        aux_list.extend(aux_list2)
+    elif cnot == "floating_gate":
+        
+        circuit = floating_gate_cnot(measurements = True)
         result = cnot_truth_table_experiment(circuit = circuit)
         aux_list2 = [value for _, value in result.items()]
         aux_list.extend(aux_list2)
@@ -122,6 +128,16 @@ for cnot in cnots_list:
                     
                     qc_with_meas = sqrt_xx_cnot(measurements = True, noisy = cx_error)
                     qc_without_meas = sqrt_xx_cnot(noisy = cx_error)
+            elif cnot == "floating_gate":
+                
+                if error == "bitflip_and_coherent_errors" or error == "depolarizing_and_coherent_errors":
+                    
+                    continue
+                else:
+                    
+                    qc_with_meas = floating_gate_cnot(measurements = True, noisy = cx_error)
+                    qc_without_meas = floating_gate_cnot(noisy = cx_error) 
+                
             elif cnot == "controlled_rx":
                 
                 if error == "bitflip" or error == "depolarizing":
