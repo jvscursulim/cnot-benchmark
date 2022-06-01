@@ -32,7 +32,8 @@ def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, p
                 else:
                     
                     qc.crx(theta = params[0], control_qubit = 0, target_qubit = 1)
-                    
+                
+                qc.s(qubit = 0)    
                 qc.measure(qubit = [0,1], cbit = [0,1])
             else:
                 
@@ -45,7 +46,8 @@ def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, p
                     else:
                         
                         qc.crx(theta = params[0], control_qubit = 0, target_qubit = 1)
-                        
+                    
+                    qc.s(qubit = 0)    
                     qc.append(noisy, qargs = [0,1])
                     qc.measure(qubit = [0,1], cbit = [0,1])
                 else:
@@ -64,6 +66,7 @@ def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, p
                 else:
                     
                     qc.crx(theta = params[0], control_qubit = 0, target_qubit = 1)
+                qc.s(qubit = 0)
             else:
                 
                 if isinstance(noisy, QuantumError):
@@ -75,6 +78,7 @@ def controlled_rx_cnot(measurements: bool = False, noisy: QuantumError = None, p
                     else:
                     
                         qc.crx(theta = params[0], control_qubit = 0, target_qubit = 1)
+                    qc.s(qubit = 0)
                     qc.append(noisy, qargs = [0,1])
                 else:
                     
@@ -465,6 +469,7 @@ def sqrt_xx_cnot(measurements: bool = False, noisy: QuantumError = None) -> Quan
                 qc.sx(qubit = 1)
                 qc.s(qubit = 0)
                 qc.x(qubit = 0)
+                qc.z(qubit = 0)
             else:
                 
                 if isinstance(noisy, QuantumError):
@@ -477,6 +482,7 @@ def sqrt_xx_cnot(measurements: bool = False, noisy: QuantumError = None) -> Quan
                     qc.sx(qubit = 1)
                     qc.s(qubit = 0)
                     qc.x(qubit = 0)
+                    qc.z(qubit = 0)
                     qc.append(noisy, qargs = [0,1])
                 else:
                     
@@ -496,6 +502,7 @@ def sqrt_xx_cnot(measurements: bool = False, noisy: QuantumError = None) -> Quan
                 qc.sx(qubit = 1)
                 qc.s(qubit = 0)
                 qc.x(qubit = 0)
+                qc.z(qubit = 0)
             else:
                 
                 if isinstance(noisy, QuantumError):
@@ -508,6 +515,7 @@ def sqrt_xx_cnot(measurements: bool = False, noisy: QuantumError = None) -> Quan
                     qc.sx(qubit = 1)
                     qc.s(qubit = 0)
                     qc.x(qubit = 0)
+                    qc.z(qubit = 0)
                     qc.append(noisy, qargs = [0,1])
                 else:
                     
