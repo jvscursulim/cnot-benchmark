@@ -146,8 +146,14 @@ for cnot in cnots_list:
                     qc_without_meas = controlled_rx_cnot(noisy = cx_error)
                 else:
                     
-                    qc_with_meas = controlled_rx_cnot(measurements = True, noisy = cx_error, params = params_list[0])
-                    qc_without_meas = controlled_rx_cnot(noisy = cx_error, params = params_list[0])
+                    if p_error == 0:
+                        
+                        qc_with_meas = controlled_rx_cnot(measurements = True, noisy = cx_error)
+                        qc_without_meas = controlled_rx_cnot(noisy = cx_error)
+                    else:
+                        
+                        qc_with_meas = controlled_rx_cnot(measurements = True, noisy = cx_error, params = params_list[0])
+                        qc_without_meas = controlled_rx_cnot(noisy = cx_error, params = params_list[0])
             elif cnot == "molmer_sorensen":
                 
                 if error == "bitflip" or error == "depolarizing":
@@ -156,8 +162,14 @@ for cnot in cnots_list:
                     qc_without_meas = molmer_sorensen_cnot(noisy = cx_error)
                 else:
                     
-                    qc_with_meas = molmer_sorensen_cnot(measurements = True, noisy = cx_error, params = params_list[1])
-                    qc_without_meas = molmer_sorensen_cnot(noisy = cx_error, params = params_list[1])
+                    if p_error == 0:
+                        
+                        qc_with_meas = molmer_sorensen_cnot(measurements = True, noisy = cx_error)
+                        qc_without_meas = molmer_sorensen_cnot(noisy = cx_error)
+                    else:
+                        
+                        qc_with_meas = molmer_sorensen_cnot(measurements = True, noisy = cx_error, params = params_list[1])
+                        qc_without_meas = molmer_sorensen_cnot(noisy = cx_error, params = params_list[1])
             else:
                 
                 if error == "bitflip" or error == "depolarizing":
@@ -166,8 +178,14 @@ for cnot in cnots_list:
                     qc_without_meas = sqrt_swap_cnot(noisy = cx_error)
                 else:
                     
-                    qc_with_meas = sqrt_swap_cnot(measurements = True, noisy = cx_error, params = params_list[2])
-                    qc_without_meas = sqrt_swap_cnot(noisy = cx_error, params = params_list[2])
+                    if p_error == 0:
+                        
+                        qc_with_meas = sqrt_swap_cnot(measurements = True, noisy = cx_error)
+                        qc_without_meas = sqrt_swap_cnot(noisy = cx_error)
+                    else:
+                        
+                        qc_with_meas = sqrt_swap_cnot(measurements = True, noisy = cx_error, params = params_list[2])
+                        qc_without_meas = sqrt_swap_cnot(noisy = cx_error, params = params_list[2])
                     
             qc_code = create_3_repetition_code_circuit(env_param = np.pi/2, noisy_cnot = qc_without_meas)
             
